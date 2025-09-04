@@ -1,0 +1,34 @@
+name: Update Daily Quote
+
+on:
+  schedule:
+    - cron: "0 6 * * *"  # every day at 06:00 UTC (07:00 Lagos)
+  workflow_dispatch:      # lets you run it manually
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # allow the bot to push README changes
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install (no deps)
+        run: echo "No dependencies to install"
+
+      - name: Run quote script
+        run: npm start
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "🌟 Update daily quote" || echo "No changes to commit"
+          git push
